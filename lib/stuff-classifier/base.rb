@@ -165,6 +165,30 @@ class StuffClassifier::Base
     return best    
   end
 
+  def clissify_with_possibility(text)
+    max_prob = 0.0
+    best = nil
+
+    result = {}
+    total_weight = cat_scores(text).map{|itm| itm[1]}.inject(0) {|r, v| r += v}
+
+    cat_scores(text).each do |score|
+      cat, prob = score
+      result[cat] = [cat, (prob * 100)/total_weight] if prob > 0
+      if prob > max_prob
+        max_prob = prob
+        best = cat
+      end
+    end
+
+    result = result.map do |industry, score|
+      score   
+    end.sort {|x, y|  y[1] <=> x[1]}
+
+    { best: best, other: result }
+  end
+
+
   def save_state
     @storage.save_state(self)
   end
